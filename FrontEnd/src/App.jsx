@@ -1328,27 +1328,31 @@ const UserSearch = ({ onShowThankYou }) => {
                     Select Accommodation
                   </h3>
                   <div className="detail-items">
-                    {selectedDestination.accommodations?.map(acc => (
-                      <div 
-                        key={acc.id} 
-                        className={`detail-item accommodation selectable ${selectedAccommodation?.id === acc.id ? 'selected' : ''}`}
-                        onClick={() => setSelectedAccommodation(acc)}
-                      >
-                        <div>
-                          <span className="detail-item-name">{acc.type_name}</span>
-                          <span className="detail-item-info">Capacity: {acc.capacity} people</span>
-                          <span className="detail-item-info">
-                            Rooms needed: {Math.ceil(numPeople / acc.capacity)}
-                          </span>
+                    {selectedDestination.accommodations?.map(acc => {
+                      const roomsNeeded = Math.ceil(numPeople / acc.capacity);
+                      const totalCost = acc.price * numDays * roomsNeeded;
+                      return (
+                        <div 
+                          key={acc.id} 
+                          className={`detail-item accommodation selectable ${selectedAccommodation?.id === acc.id ? 'selected' : ''}`}
+                          onClick={() => setSelectedAccommodation(acc)}
+                        >
+                          <div>
+                            <span className="detail-item-name">{acc.type_name}</span>
+                            <span className="detail-item-info">Capacity: {acc.capacity} people</span>
+                            <span className="detail-item-info">
+                              Rooms needed: {roomsNeeded} × {numDays} days
+                            </span>
+                          </div>
+                          <div className="price-info">
+                            <span className="detail-item-cost purple">₹{acc.price?.toLocaleString()}/night</span>
+                            <span className="detail-item-total">
+                              Total: ₹{totalCost.toLocaleString()}
+                            </span>
+                          </div>
                         </div>
-                        <div className="price-info">
-                          <span className="detail-item-cost purple">₹{acc.price?.toLocaleString()}/night</span>
-                          <span className="detail-item-total">
-                            Total: ₹{(acc.price * numDays * Math.ceil(numPeople / acc.capacity)).toLocaleString()}
-                          </span>
-                        </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
 
@@ -1359,25 +1363,29 @@ const UserSearch = ({ onShowThankYou }) => {
                     Select Transportation
                   </h3>
                   <div className="detail-items">
-                    {selectedDestination.transportation?.map(transport => (
-                      <div 
-                        key={transport.id} 
-                        className={`detail-item transport selectable ${selectedTransport?.id === transport.id ? 'selected' : ''}`}
-                        onClick={() => setSelectedTransport(transport)}
-                      >
-                        <div>
-                          <span className="detail-item-name">{transport.vehicle_type}</span>
-                          <span className="detail-item-info">Capacity: {transport.capacity}</span>
-                          <span className="detail-item-info">Available: {transport.available_units}</span>
+                    {selectedDestination.transportation?.map(transport => {
+                      const totalCost = transport.price * numDays;
+                      return (
+                        <div 
+                          key={transport.id} 
+                          className={`detail-item transport selectable ${selectedTransport?.id === transport.id ? 'selected' : ''}`}
+                          onClick={() => setSelectedTransport(transport)}
+                        >
+                          <div>
+                            <span className="detail-item-name">{transport.vehicle_type}</span>
+                            <span className="detail-item-info">Capacity: {transport.capacity}</span>
+                            <span className="detail-item-info">Available: {transport.available_units}</span>
+                            <span className="detail-item-info">Duration: {numDays} days</span>
+                          </div>
+                          <div className="price-info">
+                            <span className="detail-item-cost blue">₹{transport.price?.toLocaleString()}/day</span>
+                            <span className="detail-item-total">
+                              Total: ₹{totalCost.toLocaleString()}
+                            </span>
+                          </div>
                         </div>
-                        <div className="price-info">
-                          <span className="detail-item-cost blue">₹{transport.price?.toLocaleString()}/day</span>
-                          <span className="detail-item-total">
-                            Total: ₹{(transport.price * numDays).toLocaleString()}
-                          </span>
-                        </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
 
@@ -1388,26 +1396,32 @@ const UserSearch = ({ onShowThankYou }) => {
                     Select Food Items (Multiple Selection)
                   </h3>
                   <div className="detail-items">
-                    {selectedDestination.food_items?.map(food => (
-                      <div 
-                        key={food.id} 
-                        className={`detail-item food selectable ${selectedFoodItems.find(f => f.id === food.id) ? 'selected' : ''}`}
-                        onClick={() => handleFoodToggle(food)}
-                      >
-                        <div>
-                          <span className="detail-item-name">{food.item_name}</span>
-                          <span className="detail-item-info">
-                            {food.cuisine_type} • {food.is_vegetarian ? '🥬 Veg' : '🍖 Non-Veg'}
-                          </span>
+                    {selectedDestination.food_items?.map(food => {
+                      const totalCost = food.price * numPeople * numDays;
+                      return (
+                        <div 
+                          key={food.id} 
+                          className={`detail-item food selectable ${selectedFoodItems.find(f => f.id === food.id) ? 'selected' : ''}`}
+                          onClick={() => handleFoodToggle(food)}
+                        >
+                          <div>
+                            <span className="detail-item-name">{food.item_name}</span>
+                            <span className="detail-item-info">
+                              {food.cuisine_type} • {food.is_vegetarian ? '🥬 Veg' : '🍖 Non-Veg'}
+                            </span>
+                            <span className="detail-item-info">
+                              {numPeople} people × {numDays} days
+                            </span>
+                          </div>
+                          <div className="price-info">
+                            <span className="detail-item-cost green">₹{food.price?.toLocaleString()}/person/meal</span>
+                            <span className="detail-item-total">
+                              Total: ₹{totalCost.toLocaleString()}
+                            </span>
+                          </div>
                         </div>
-                        <div className="price-info">
-                          <span className="detail-item-cost green">₹{food.price?.toLocaleString()}</span>
-                          <span className="detail-item-total">
-                            Total: ₹{(food.price * numPeople * numDays).toLocaleString()}
-                          </span>
-                        </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
 
@@ -1418,33 +1432,37 @@ const UserSearch = ({ onShowThankYou }) => {
                     Select Guide (Optional)
                   </h3>
                   <div className="detail-items">
-                    {selectedDestination.guides?.map(guide => (
-                      <div 
-                        key={guide.id} 
-                        className={`detail-item guide selectable ${selectedGuide?.id === guide.id ? 'selected' : ''}`}
-                        onClick={() => setSelectedGuide(selectedGuide?.id === guide.id ? null : guide)}
-                      >
-                        <div>
-                          <span className="detail-item-name">{guide.name}</span>
-                          <span className="detail-item-info">
-                            Languages: {guide.languages}
-                          </span>
-                          <span className="detail-item-info">
-                            Experience: {guide.experience_years} years • ⭐ {guide.rating}
-                          </span>
-                          <span className="detail-item-contact">
-                            <Phone className="icon-sm" />
-                            {guide.contact_number}
-                          </span>
+                    {selectedDestination.guides?.map(guide => {
+                      const totalCost = guide.price * numDays;
+                      return (
+                        <div 
+                          key={guide.id} 
+                          className={`detail-item guide selectable ${selectedGuide?.id === guide.id ? 'selected' : ''}`}
+                          onClick={() => setSelectedGuide(selectedGuide?.id === guide.id ? null : guide)}
+                        >
+                          <div>
+                            <span className="detail-item-name">{guide.name}</span>
+                            <span className="detail-item-info">
+                              Languages: {guide.languages}
+                            </span>
+                            <span className="detail-item-info">
+                              Experience: {guide.experience_years} years • ⭐ {guide.rating}
+                            </span>
+                            <span className="detail-item-info">Duration: {numDays} days</span>
+                            <span className="detail-item-contact">
+                              <Phone className="icon-sm" />
+                              {guide.contact_number}
+                            </span>
+                          </div>
+                          <div className="price-info">
+                            <span className="detail-item-cost orange">₹{guide.price?.toLocaleString()}/day</span>
+                            <span className="detail-item-total">
+                              Total: ₹{totalCost.toLocaleString()}
+                            </span>
+                          </div>
                         </div>
-                        <div className="price-info">
-                          <span className="detail-item-cost orange">₹{guide.price?.toLocaleString()}/day</span>
-                          <span className="detail-item-total">
-                            Total: ₹{(guide.price * numDays).toLocaleString()}
-                          </span>
-                        </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
 
@@ -1649,7 +1667,7 @@ const AboutPage = ({ onBack }) => {
 
       <div className="about-content">
         <div className="about-container">
-  <h1> 🌍 About Travel Sphere</h1>
+  <h1> 🌎 About Travel Sphere</h1>
 
   <p>
     <strong>Travel Sphere</strong> is a smart and user-friendly travel planning
@@ -1704,7 +1722,7 @@ const AboutPage = ({ onBack }) => {
     enhance user experience.
   </p>
 <p className="ending-quote">
-  “🤝 <strong>Plan Smart. Travel Better. Explore the World with Travel Sphere.</strong>”
+  "🤝 <strong>Plan Smart. Travel Better. Explore the World with Travel Sphere.</strong>"
 </p>
 
 </div>
@@ -1741,187 +1759,6 @@ const ThankYouPage = ({ onBackToHome, onBrowseMore }) => {
     </div>
   );
 };
-// Main App Component
-const App = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [showAdmin, setShowAdmin] = useState(false);
-  const [token, setToken] = useState(null);
-  const [showThankYou, setShowThankYou] = useState(false);
-  // User-specific state
-  const [isUserAuthenticated, setIsUserAuthenticated] = useState(false);
-  const [userToken, setUserToken] = useState(null);
-  const [currentUser, setCurrentUser] = useState(null);
-  const [showUserLogin, setShowUserLogin] = useState(false);
-  const [showUserRegister, setShowUserRegister] = useState(false);
-  const [showHome, setShowHome] = useState(true);
-  const [showAbout, setShowAbout] = useState(false);
-
-
-  const handleGetStarted = () => {
-    setShowHome(false);
-  };
-
-  const handleLearnMore = () => {
-    setShowHome(false);
-    setShowAbout(true);
-  };
-
-  const handleBackToHome = () => {
-    setShowHome(true);
-    setShowAbout(false);
-  };
-
-  const handleAdminLogin = (authToken) => {
-    setToken(authToken);
-    setIsAuthenticated(true);
-  };
-
-  const handleAdminLogout = () => {
-    setToken(null);
-    setIsAuthenticated(false);
-    setShowAdmin(false);
-  };
-
-  const handleUserLogin = (authToken, user) => {
-    setUserToken(authToken);
-    setCurrentUser(user);
-    setIsUserAuthenticated(true);
-    setShowUserLogin(false);
-    setShowUserRegister(false);
-  };
-
-  const handleUserRegister = (authToken, user) => {
-    setUserToken(authToken);
-    setCurrentUser(user);
-    setIsUserAuthenticated(true);
-    setShowUserLogin(false);
-    setShowUserRegister(false);
-  };
-
-  const handleUserLogout = () => {
-    setUserToken(null);
-    setCurrentUser(null);
-    setIsUserAuthenticated(false);
-  };
-
-
-  const handleShowThankYou = () => {
-  setShowThankYou(true);
-  setShowHome(false);
-};
-
-const handleBackToHomeFromThankYou = () => {
-  setShowThankYou(false);
-  setShowHome(true);
-};
-
-const handleBrowseMoreFromThankYou = () => {
-  setShowThankYou(false);
-  setShowHome(false);
-};
-
-  // Admin Login Flow
-  if (showAdmin && !isAuthenticated) {
-    return <Login onLogin={handleAdminLogin} />;
-  }
-
-  if (showAdmin && isAuthenticated) {
-    return <AdminDashboard onLogout={handleAdminLogout} token={token} />;
-  }
-
-  // User Login Flow
-  if (showUserLogin) {
-    return (
-      <UserLogin
-        onLogin={handleUserLogin}
-        onSwitchToRegister={() => {
-          setShowUserLogin(false);
-          setShowUserRegister(true);
-        }}
-        onBack={() => setShowUserLogin(false)}
-      />
-    );
-  }
-
-  // User Register Flow
-  if (showUserRegister) {
-    return (
-      <UserRegister
-        onRegister={handleUserRegister}
-        onSwitchToLogin={() => {
-          setShowUserRegister(false);
-          setShowUserLogin(true);
-        }}
-        onBack={() => setShowUserRegister(false)}
-      />
-    );
-  }
-
-  // User Dashboard Flow
-  if (isUserAuthenticated && currentUser) {
-    return (
-       <UserDashboardWithFeedback
-        user={currentUser}
-        token={userToken}
-        onLogout={handleUserLogout}
-      />
-    );
-  }
-
-
-  if (showHome) {
-    return <HomePage onGetStarted={handleGetStarted} onLearnMore={handleLearnMore} />;
-  }
-
-
-  if (showAbout) {
-    return <AboutPage onBack={handleBackToHome} />;
-  }
-
-  // Show thank you page
-if (showThankYou) {
-  return (
-    <ThankYouPage 
-      onBackToHome={handleBackToHomeFromThankYou}
-      onBrowseMore={handleBrowseMoreFromThankYou}
-    />
-  );
-}
-
-  // Main Search Page with Login/Register buttons
-  return (
-    <div>
-      <div className="search-navbar">
-        <div className="search-navbar-content" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div>
-            <h1 className="search-title">Travel Discovery Platform</h1>
-            <p className="search-subtitle">Find your perfect destination</p>
-          </div>
-          <div style={{ display: 'flex', gap: '1rem' }}>
-            <button onClick={() => setShowUserLogin(true)} className="btn-header-login">
-              <User className="icon-sm" style={{ display: 'inline', marginRight: '0.5rem' }} />
-              User Login
-            </button>
-            <button onClick={() => setShowUserRegister(true)} className="btn-header-signup">
-              Sign Up
-            </button>
-          </div>
-        </div>
-      </div>
-      
-      <UserSearch onShowThankYou={handleShowThankYou} />
-      
-      <button onClick={() => setShowAdmin(true)} className="admin-btn">
-        <Lock className="icon-sm" style={{ display: 'inline', marginRight: '0.5rem' }} />
-        Admin Login
-      </button>
-    </div>
-  );
-};
-
-export default App;
-
-// ADD THESE COMPONENTS TO YOUR App.jsx
 
 // General Feedback Modal Component
 const FeedbackModal = ({ onClose, onSubmit, feedbackType, relatedId, relatedName }) => {
@@ -1967,653 +1804,41 @@ const FeedbackModal = ({ onClose, onSubmit, feedbackType, relatedId, relatedName
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content review-modal" onClick={(e) => e.stopPropagation()}>
         <h3 className="modal-title">{getFeedbackTitle()}</h3>
-        
-        <div className="rating-section">
-          <label>Your Rating:</label>
-          <div className="star-rating">
-            {[1, 2, 3, 4, 5].map(star => (
-              <Star
-                key={star}
-                className={`star-icon ${star <= rating ? 'filled' : ''}`}
-                onClick={() => setRating(star)}
-                fill={star <= rating ? '#fbbf24' : 'none'}
-                stroke={star <= rating ? '#fbbf24' : '#d1d5db'}
-              />
-            ))}
-          </div>
-        </div>
 
-        <div className="form-group">
-          <label className="form">Your Feedback</label>
-          <textarea
-            value={feedbackText}
-            onChange={(e) => setFeedbackText(e.target.value)}
-            className="form-input"
-            rows="5"
-            placeholder="Share your experience and suggestions..."
-            disabled={submitting}
-          />
-        </div>
-
-        <div className="modal-actions">
-          <button
-            onClick={handleSubmit}
-            disabled={submitting || !feedbackText.trim()}
-            className="btn btn-primary"
-          >
-            {submitting ? 'Submitting...' : 'Submit Feedback'}
-          </button>
-          <button onClick={onClose} className="btn btn-cancel">
-            Cancel
-          </button>
-        </div>
-      </div>
+     </div>
     </div>
   );
 };
 
-// Feedback List Component
-const FeedbackList = ({ feedbacks, averageRating, totalFeedbacks }) => {
-  if (!feedbacks || feedbacks.length === 0) {
-    return (
-      <div className="empty-state">
-        <p>No feedback yet. Be the first to share your experience!</p>
-      </div>
-    );
-  }
+const App = () => {
+  const [page, setPage] = useState('home');
 
   return (
-    <div className="reviews-container">
-      <div className="reviews-summary">
-        <div className="average-rating">
-          <span className="rating-number">{averageRating}</span>
-          <div className="stars-display">
-            {[1, 2, 3, 4, 5].map(star => (
-              <Star
-                key={star}
-                className="star-small"
-                fill={star <= Math.round(averageRating) ? '#fbbf24' : 'none'}
-                stroke={star <= Math.round(averageRating) ? '#fbbf24' : '#d1d5db'}
-              />
-            ))}
-          </div>
-          <span className="total-reviews">{totalFeedbacks} feedbacks</span>
-        </div>
-      </div>
-
-      <div className="reviews-list">
-        {feedbacks.map(feedback => (
-          <div key={feedback.id} className="review-card">
-            <div className="review-header">
-              <div>
-                <span className="reviewer-name">{feedback.user_name}</span>
-                <span className="review-date">{new Date(feedback.created_at).toLocaleDateString()}</span>
-              </div>
-              <div className="review-rating">
-                {[1, 2, 3, 4, 5].map(star => (
-                  <Star
-                    key={star}
-                    className="star-small"
-                    fill={star <= feedback.rating ? '#fbbf24' : 'none'}
-                    stroke={star <= feedback.rating ? '#fbbf24' : '#d1d5db'}
-                  />
-                ))}
-              </div>
-            </div>
-            <p className="review-text">{feedback.feedback_text}</p>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-};
-
-// UPDATED User Dashboard with Feedback Tab
-const UserDashboardWithFeedback = ({ user, token, onLogout }) => {
-  const [activeTab, setActiveTab] = useState('trips');
-  const [trips, setTrips] = useState([]);
- 
-  const [reviewableTrips, setReviewableTrips] = useState([]);
-  const [feedbacks, setFeedbacks] = useState([]);
-  const [loading, setLoading] = useState(true);
-  
-  const [showFeedbackModal, setShowFeedbackModal] = useState(false);
-  const [selectedTrip, setSelectedTrip] = useState(null);
-  const [feedbackType, setFeedbackType] = useState('overall');
-
-  useEffect(() => {
-    loadData();
-  }, [activeTab]);
-
-
-  const handleDeleteTrip = async (tripId) => {
-  if (window.confirm('Are you sure you want to cancel this booking?')) {
-    try {
-      // Use the user-specific endpoint
-      await api.put(`/user/trips/${tripId}/cancel`, {}, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      
-      alert('Booking cancelled successfully!');
-      loadData();
-    } catch (error) {
-      console.error('Error cancelling trip:', error);
-      
-      if (error.response?.status === 404) {
-        alert('Trip not found or does not belong to you.');
-      } else if (error.response?.data?.error) {
-        alert(error.response.data.error);
-      } else {
-        alert('Failed to cancel booking. Please try again.');
-      }
-    }
-  }
-};
-
-  const loadData = async () => {
-    setLoading(true);
-    try {
-      if (activeTab === 'trips') {
-        const response = await api.get('/user/trips', {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        setTrips(response.data);
-      } else if (activeTab === 'reviews') {
-        const [reviewsRes, reviewableRes] = await Promise.all([
-          api.get('/user/reviews', {
-            headers: { Authorization: `Bearer ${token}` }
-          }),
-          api.get('/user/trips/reviewable', {
-            headers: { Authorization: `Bearer ${token}` }
-          })
-        ]);
-        setReviews(reviewsRes.data);
-        setReviewableTrips(reviewableRes.data);
-      } else if (activeTab === 'feedback') {
-        const response = await api.get('/user/feedbacks', {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        setFeedbacks(response.data);
-      }
-    } catch (error) {
-      console.error('Error loading data:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-  
-
- 
-
-  const handleSubmitFeedback = async (feedbackData) => {
-    try {
-      await api.post('/feedback', feedbackData, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      alert('Feedback submitted successfully!');
-      setShowFeedbackModal(false);
-      loadData();
-    } catch (error) {
-      alert(error.response?.data?.error || 'Failed to submit feedback');
-    }
-  };
-
-  const getFeedbackTypeLabel = (type) => {
-    const labels = {
-      'accommodation': 'Accommodation',
-      'transport': 'Transportation',
-      'guide': 'Tour Guide',
-      'hotel': 'Hotel',
-      'city': 'City/Destination',
-      'overall': 'Overall Platform'
-    };
-    return labels[type] || type;
-  };
-
-  return (
-     <div
-  className="dashboard-content dashboard-bg"
-  style={{ backgroundImage: `url(${userBg})` }}
->
-
-     <nav className="navbar">
-
-
-        <div className="navbar-content">
-          <div>
-            <h1 className="navbar-title">My Dashboard</h1>
-            <p style={{ color: '#6b7280', fontSize: '0.875rem', marginTop: '0.25rem' }}>
-              Welcome, {user.name}
-            </p>
-          </div>
-          <button onClick={onLogout} className="logout-btn">
-            <LogOut className="icon-sm" />
-            Logout
-          </button>
-        </div>
-      </nav>
-
-      <div className="dashboard-content">
-        <div className="card">
-          <div className="tabs">
-            <button
-              onClick={() => setActiveTab('trips')}
-              className={`tab-button ${activeTab === 'trips' ? 'active' : ''}`}
-            >
-              My Trips
-            </button>
-           
-            <button
-              onClick={() => setActiveTab('feedback')}
-              className={`tab-button ${activeTab === 'feedback' ? 'active' : ''}`}
-            >
-              Give Feedback
-            </button>
-          </div>
-        </div>
-
-        <div className="card">
-          <div className="card-content">
-            {activeTab === 'trips' && (
-              <>
-                <h2 className="card-title">Your Trip Applications</h2>
-                {loading ? (
-                  <div className="loading">Loading your bookings...</div>
-                ) : trips.length === 0 ? (
-                  <div className="empty-state">
-                    <p>You haven't made any bookings yet.</p>
-                  </div>
-                ) : (
-                  <div className="table-container">
-                    <table>
-                      <thead>
-                        <tr>
-                          <th>Destination</th>
-                          <th>Hotel</th>
-                          <th>Season</th>
-                          <th>People</th>
-                          <th>Total Cost</th>
-                          <th>Status</th>
-                          
-                        </tr>
-                      </thead>
-                    <tbody>
-                        {trips.map(trip => (
-                          <tr key={trip.id}>
-                            <td>
-                              <strong>{trip.city_name}</strong>
-                              <br />
-                              <span style={{ fontSize: '0.875rem', color: '#6b7280' }}>
-                                {trip.state_name}
-                              </span>
-                            </td>
-                            <td>{trip.hotel_name}</td>
-                            <td>{trip.season_name}</td>
-                            <td>{trip.num_people}</td>
-                            <td>₹{trip.total_cost?.toLocaleString()}</td>
-                            <td>
-                              <span className={`status-badge ${trip.status}`}>
-                                {trip.status}
-                              </span>
-                              {trip.admin_notes && (
-                                <div style={{ fontSize: '0.75rem', color: '#6b7280', marginTop: '0.25rem' }}>
-                                  Note: {trip.admin_notes}
-                                </div>
-                              )}
-                            </td>
-
-                    
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                )}
-              </>
-            )}
-
-           
-                     
-
-            {activeTab === 'feedback' && (
-              <>
-                <h2 className="card-title">Give Feedback</h2>
-                
-                <div className="feedback-options-section">
-                  <h3 style={{ fontSize: '1.125rem', marginBottom: '1rem', color: '#374151' }}>
-                    What would you like to give feedback about?
-                  </h3>
-                  <div className="feedback-options-grid">
-                    <button
-                      onClick={() => {
-                        setFeedbackType('accommodation');
-                        setShowFeedbackModal(true);
-                      }}
-                      className="feedback-option-card"
-                    >
-                      <Hotel className="feedback-icon" />
-                      <h4>Accommodation</h4>
-                      <p>Room quality, cleanliness, amenities</p>
-                    </button>
-
-                    <button
-                      onClick={() => {
-                        setFeedbackType('transport');
-                        setShowFeedbackModal(true);
-                      }}
-                      className="feedback-option-card"
-                    >
-                      <Bus className="feedback-icon" />
-                      <h4>Transportation</h4>
-                      <p>Vehicle quality, driver, comfort</p>
-                    </button>
-
-                    <button
-                      onClick={() => {
-                        setFeedbackType('guide');
-                        setShowFeedbackModal(true);
-                      }}
-                      className="feedback-option-card"
-                    >
-                      <User className="feedback-icon" />
-                      <h4>Tour Guide</h4>
-                      <p>Knowledge, communication, helpfulness</p>
-                    </button>
-
-                    <button
-                      onClick={() => {
-                        setFeedbackType('hotel');
-                        setShowFeedbackModal(true);
-                      }}
-                      className="feedback-option-card"
-                    >
-                      <Hotel className="feedback-icon" />
-                      <h4>Hotel Service</h4>
-                      <p>Staff, service quality, facilities</p>
-                    </button>
-
-                    <button
-                      onClick={() => {
-                        setFeedbackType('city');
-                        setShowFeedbackModal(true);
-                      }}
-                      className="feedback-option-card"
-                    >
-                      <MapPin className="feedback-icon" />
-                      <h4>City/Destination</h4>
-                      <p>Attractions, cleanliness, safety</p>
-                    </button>
-
-                    <button
-                      onClick={() => {
-                        setFeedbackType('overall');
-                        setShowFeedbackModal(true);
-                      }}
-                      className="feedback-option-card overall"
-                    >
-                      <Star className="feedback-icon" />
-                      <h4>Overall Platform</h4>
-                      <p>Website, booking process, support</p>
-                    </button>
-                  </div>
-                </div>
-
-                {loading ? (
-                  <div className="loading">Loading your feedbacks...</div>
-                ) : (
-                  <>
-                    <h3 style={{ fontSize: '1.125rem', margin: '2rem 0 1rem', color: '#374151' }}>
-                      Your Feedbacks ({feedbacks.length})
-                    </h3>
-                    {feedbacks.length === 0 ? (
-                      <div className="empty-state">
-                        <p>You haven't submitted any feedback yet.</p>
-                        <p style={{ fontSize: '0.875rem', marginTop: '0.5rem' }}>
-                          Share your experience to help us improve!
-                        </p>
-                      </div>
-                    ) : (
-                      <div className="reviews-list">
-                        {feedbacks.map(feedback => (
-                          <div key={feedback.id} className="review-card user-review">
-                            <div className="review-header">
-                              <div>
-                                <span className="review-destination">
-                                  {getFeedbackTypeLabel(feedback.feedback_type)}
-                                </span>
-                                <span className="review-date">
-                                  {new Date(feedback.created_at).toLocaleDateString()}
-                                </span>
-                              </div>
-                              <div className="review-rating">
-                                {[1, 2, 3, 4, 5].map(star => (
-                                  <Star
-                                    key={star}
-                                    className="star-small"
-                                    fill={star <= feedback.rating ? '#fbbf24' : 'none'}
-                                    stroke={star <= feedback.rating ? '#fbbf24' : '#d1d5db'}
-                                  />
-                                ))}
-                              </div>
-                            </div>
-                            <p className="review-text">{feedback.feedback_text}</p>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </>
-                )}
-              </>
-            )}
-          </div>
-        </div>
-      </div>
-
-      
-      {showFeedbackModal && (
-        <FeedbackModal
-          onClose={() => setShowFeedbackModal(false)}
-          onSubmit={handleSubmitFeedback}
-          feedbackType={feedbackType}
-          relatedId={null}
-          relatedName={null}
+    <>
+      {page === 'home' && (
+        <HomePage
+          onGetStarted={() => setPage('search')}
+          onLearnMore={() => setPage('about')}
         />
       )}
-    </div>
+
+      {page === 'about' && (
+        <AboutPage onBack={() => setPage('home')} />
+      )}
+
+      {page === 'search' && (
+        <UserSearch
+          onShowThankYou={() => setPage('thankyou')}
+        />
+      )}
+
+      {page === 'thankyou' && (
+        <ThankYouPage
+          onBackToHome={() => setPage('home')}
+          onBrowseMore={() => setPage('search')}
+        />
+      )}
+    </>
   );
 };
-// ADD THIS COMPONENT TO YOUR App.jsx
-
-// Admin Feedbacks Tab Component
-const AdminFeedbacksTab = ({ token }) => {
-  const [feedbacks, setFeedbacks] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [filterType, setFilterType] = useState('all');
-
-  useEffect(() => {
-    loadFeedbacks();
-  }, [filterType]);
-
-  const loadFeedbacks = async () => {
-    setLoading(true);
-    try {
-      const params = filterType !== 'all' ? `?type=${filterType}` : '';
-      const response = await api.get(`/admin/feedbacks${params}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setFeedbacks(response.data);
-    } catch (error) {
-      console.error('Error loading feedbacks:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleDelete = async (feedbackId) => {
-    if (window.confirm('Are you sure you want to delete this feedback?')) {
-      try {
-        await api.delete(`/admin/feedbacks/${feedbackId}`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        loadFeedbacks();
-      } catch (error) {
-        console.error('Error deleting feedback:', error);
-        alert('Failed to delete feedback');
-      }
-    }
-  };
-
-  const getFeedbackTypeLabel = (type) => {
-    const labels = {
-      'accommodation': 'Accommodation',
-      'transport': 'Transportation',
-      'guide': 'Tour Guide',
-      'hotel': 'Hotel',
-      'city': 'City/Destination',
-      'overall': 'Overall Platform'
-    };
-    return labels[type] || type;
-  };
-
-  const getFeedbackTypeBadge = (type) => {
-    const colors = {
-      'accommodation': '#9333ea',
-      'transport': '#3b82f6',
-      'guide': '#16a34a',
-      'hotel': '#ea580c',
-      'city': '#0891b2',
-      'overall': '#dc2626'
-    };
-    return (
-      <span style={{
-        padding: '0.25rem 0.75rem',
-        borderRadius: '0.375rem',
-        fontSize: '0.75rem',
-        fontWeight: '600',
-        backgroundColor: colors[type] + '20',
-        color: colors[type]
-      }}>
-        {getFeedbackTypeLabel(type)}
-      </span>
-    );
-  };
-
-  if (loading) {
-    return <div className="loading">Loading feedbacks...</div>;
-  }
-
-  return (
-    <div>
-      <div style={{ marginBottom: '1.5rem', display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-        <button
-          onClick={() => setFilterType('all')}
-          className={`filter-btn ${filterType === 'all' ? 'active' : ''}`}
-        >
-          All ({feedbacks.length})
-        </button>
-        <button
-          onClick={() => setFilterType('accommodation')}
-          className={`filter-btn ${filterType === 'accommodation' ? 'active' : ''}`}
-        >
-          Accommodation
-        </button>
-        <button
-          onClick={() => setFilterType('transport')}
-          className={`filter-btn ${filterType === 'transport' ? 'active' : ''}`}
-        >
-          Transportation
-        </button>
-        <button
-          onClick={() => setFilterType('guide')}
-          className={`filter-btn ${filterType === 'guide' ? 'active' : ''}`}
-        >
-          Tour Guide
-        </button>
-        <button
-          onClick={() => setFilterType('hotel')}
-          className={`filter-btn ${filterType === 'hotel' ? 'active' : ''}`}
-        >
-          Hotel
-        </button>
-        <button
-          onClick={() => setFilterType('city')}
-          className={`filter-btn ${filterType === 'city' ? 'active' : ''}`}
-        >
-          City
-        </button>
-        <button
-          onClick={() => setFilterType('overall')}
-          className={`filter-btn ${filterType === 'overall' ? 'active' : ''}`}
-        >
-          Overall Platform
-        </button>
-      </div>
-
-      <div className="table-container">
-        <table>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>User</th>
-              <th>Type</th>
-              <th>Rating</th>
-              <th>Feedback</th>
-              <th>Date</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {feedbacks.map(feedback => (
-              <tr key={feedback.id}>
-                <td>{feedback.id}</td>
-                <td>
-                  <strong>{feedback.user_name}</strong>
-                  <br />
-                  <span style={{ fontSize: '0.875rem', color: '#6b7280' }}>
-                    {feedback.user_email}
-                  </span>
-                </td>
-                <td>{getFeedbackTypeBadge(feedback.feedback_type)}</td>
-                <td>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-                    {[1, 2, 3, 4, 5].map(star => (
-                      <Star
-                        key={star}
-                        className="star-small"
-                        fill={star <= feedback.rating ? '#fbbf24' : 'none'}
-                        stroke={star <= feedback.rating ? '#fbbf24' : '#d1d5db'}
-                      />
-                    ))}
-                  </div>
-                </td>
-                <td>
-                  <div style={{ maxWidth: '400px', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                    {feedback.feedback_text.substring(0, 150)}
-                    {feedback.feedback_text.length > 150 && '...'}
-                  </div>
-                </td>
-                <td>{new Date(feedback.created_at).toLocaleDateString()}</td>
-                <td>
-                  <button
-                    onClick={() => handleDelete(feedback.id)}
-                    className="btn-icon delete"
-                  >
-                    <Trash2 className="icon-sm" />
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        
-        {feedbacks.length === 0 && (
-          <div className="empty-state">
-            <p>No feedbacks found for this category.</p>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-};
-
-
+export default App;
